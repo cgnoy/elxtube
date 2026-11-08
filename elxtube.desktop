@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=elxTube
+GenericName=YouTube Client
+Comment=YouTube client vibecoded using gtk4-rust, mpv & ytdlp for old hardware
+Exec=elxtube
+Icon=elxtube
+Terminal=false
+Categories=AudioVideo;Video;Player;
+Keywords=youtube;video;stream;mpv;
+StartupWMClass=elxtube

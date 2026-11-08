@@ -1,0 +1,18 @@
+/target
+**/*.rs.bk
+*.bak
+*.bak.*
+/tmp
+.env
+.vscode/
+.idea/
+*.swp
+
+# Backup files
+*.rs.bak*
+*.bak[0-9]*
+*.bak.[0-9]*
+
+# Debug logs
+debug.log
+*.log
