@@ -22,7 +22,23 @@ jobs:
       - name: Build release bundle
         env:
           CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER: cc
-        run: bash packaging/build-bundle.sh
+        run: |
+          set -o pipefail
+          bash packaging/build-bundle.sh 2>&1 | tee build.log
+          status=${PIPESTATUS[0]}
+          {
+            echo "### Build log"
+            echo '```text'
+            cat build.log
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit "$status"
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-build-log
+          path: build.log
       - name: Build Debian package
         run: bash packaging/build-deb.sh
       - name: Build RPM package
