@@ -20,6 +20,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y clang rpm podman pkg-config libgtk-4-dev libmpv-dev
       - name: Build release bundle
+        env:
+          CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER: cc
         run: bash packaging/build-bundle.sh
       - name: Build Debian package
         run: bash packaging/build-deb.sh
