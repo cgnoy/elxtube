@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
 
 jobs:
   packages:
@@ -32,15 +33,6 @@ jobs:
             cat build.log
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
-          if [ "$status" -ne 0 ]; then
-            mkdir -p ci-diagnostics
-            cp build.log "ci-diagnostics/build-${GITHUB_RUN_ID}.log"
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add "ci-diagnostics/build-${GITHUB_RUN_ID}.log"
-            git commit -m "chore: publish CI diagnostic ${GITHUB_RUN_ID}"
-            git push origin HEAD:ci-diagnostics
-          fi
           exit "$status"
       - name: Upload build log
         if: always()
@@ -48,6 +40,20 @@ jobs:
         with:
           name: release-build-log
           path: build.log
+      - name: Publish public build diagnostic
+        if: failure()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            printf 'Run: %s\nCommit: %s\n\n```text\n' "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" "${{ github.sha }}"
+            cat build.log
+            printf '\n```\n'
+          } > build-diagnostic.md
+          gh issue create \
+            --title "CI build diagnostic ${{ github.run_id }}" \
+            --body-file build-diagnostic.md
       - name: Build Debian package
         run: bash packaging/build-deb.sh
       - name: Build RPM package
