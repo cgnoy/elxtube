@@ -39,6 +39,24 @@ Optional cookies (reduce YouTube rate-limiting):
 
     YTDLP_COOKIES_BROWSER=brave ./target/release/elxtube
 
+## Packages
+
+Release artifacts are built in `dist/`:
+
+- `elxtube_<version>_amd64.deb` for Debian and Ubuntu
+- `elxtube-<version>-1.x86_64.rpm` for Fedora, openSUSE, and compatible distributions
+- `elxtube-<version>-1-x86_64.pkg.tar.zst` for Arch Linux
+- `elxtube-<version>-x86_64.AppImage` for portable use
+
+Build all formats with:
+
+    bash packaging/build-all.sh
+
+Individual builders are available as `packaging/build-deb.sh`,
+`packaging/build-rpm.sh`, `packaging/build-arch.sh`, and
+`packaging/build-appimage.sh`. Tagged GitHub releases run the same scripts and
+publish all four artifacts.
+
 ## Known limitations
 
 - No YouTube login; subscriptions are stored locally in SQLite.

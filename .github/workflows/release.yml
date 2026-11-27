@@ -1,0 +1,54 @@
+name: Build Linux packages
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  packages:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install packaging tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rpm podman
+      - name: Build release bundle
+        run: bash packaging/build-bundle.sh
+      - name: Build Debian package
+        run: bash packaging/build-deb.sh
+      - name: Build RPM package
+        run: bash packaging/build-rpm.sh
+      - name: Build Arch package
+        run: |
+          podman run --rm -e ELXTUBE_SKIP_BUILD=1 -v "$PWD:/workspace:Z" \
+            docker.io/library/archlinux:latest \
+            bash -lc "pacman -Syu --noconfirm fakeroot >/dev/null && chmod -R a+rwX /workspace && su nobody -s /bin/bash -c 'cd /workspace && bash packaging/build-arch.sh'"
+      - name: Build AppImage
+        run: bash packaging/build-appimage.sh
+      - name: Generate checksums
+        run: sha256sum dist/*.deb dist/*.rpm dist/*.pkg.tar.zst dist/*.AppImage > dist/SHA256SUMS
+      - name: Upload package artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: elxtube-linux-packages
+          path: |
+            dist/*.deb
+            dist/*.rpm
+            dist/*.pkg.tar.zst
+            dist/*.AppImage
+            dist/SHA256SUMS
+      - name: Publish GitHub release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            dist/*.deb dist/*.rpm dist/*.pkg.tar.zst dist/*.AppImage dist/SHA256SUMS \
+            --generate-notes --title "elxTube $GITHUB_REF_NAME"

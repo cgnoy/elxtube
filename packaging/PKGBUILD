@@ -1,0 +1,20 @@
+pkgname=elxtube
+pkgver=0.1.0
+pkgrel=1
+pkgdesc='Lightweight native YouTube client for GTK4 and libmpv'
+arch=('x86_64')
+url='https://github.com/cgnoy/elxtube'
+license=('GPL-3.0-or-later')
+depends=('gtk4' 'mpv' 'python')
+optdepends=('yt-dlp: use a system-managed yt-dlp binary')
+options=('!strip' '!debug')
+source=("elxtube-$pkgver-x86_64.tar.gz")
+sha256sums=('3fb40a260aeddf2fd325cfc3fd17c71fc57a164afa884407d0ae64b48bf28558')
+
+package() {
+  tar -xzf "elxtube-$pkgver-x86_64.tar.gz"
+  install -Dm755 "elxtube-$pkgver-x86_64/elxtube" "$pkgdir/usr/bin/elxtube"
+  install -Dm644 "elxtube-$pkgver-x86_64/elxtube.desktop" "$pkgdir/usr/share/applications/elxtube.desktop"
+  install -Dm644 "elxtube-$pkgver-x86_64/icons/elxtube.png" "$pkgdir/usr/share/icons/hicolor/512x512/apps/elxtube.png"
+  install -Dm644 "elxtube-$pkgver-x86_64/LICENSE" "$pkgdir/usr/share/licenses/elxtube/LICENSE"
+}

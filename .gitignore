@@ -16,3 +16,9 @@
 # Debug logs
 debug.log
 *.log
+
+# Local release artifacts
+/dist/
+/packaging/src/
+/packaging/pkg/
+/packaging/elxtube-*.tar.gz

@@ -5,7 +5,7 @@ edition = "2021"
 rust-version = "1.80"
 description = "YouTube client vibecoded using gtk4-rust, mpv & ytdlp for old hardware"
 license = "GPL-3.0-or-later"
-repository = "https://github.com/yenpiaw/elxtube"
+repository = "https://github.com/cgnoy/elxtube"
 authors = ["yenpiaw"]
 readme = "README.md"
 
