@@ -13,10 +13,22 @@ old hardware (Passmark 500–2000, 2–4 GB RAM, HDD).
 ## Requirements
 
 - Linux (X11)
-- `gtk4`, `libmpv`, `yt-dlp`
+- `gtk4`, `libmpv`, `python3`
 - Rust 1.80+ (build only)
+- Network access on first launch
 
-Arch: `sudo pacman -S gtk4 mpv yt-dlp`
+On startup, elxtube downloads the latest yt-dlp nightly from the official
+`yt-dlp-nightly-builds` GitHub release, verifies its SHA-256 digest, validates
+the executable, and installs it under
+`$XDG_DATA_HOME/elxtube/bin/yt-dlp` (normally
+`~/.local/share/elxtube/bin/yt-dlp`). The system yt-dlp installation is never
+modified. Failed updates keep the previously installed managed binary or fall
+back to `yt-dlp` from `PATH`.
+
+Set `ELXTUBE_YTDLP_PATH` to use a specific executable and skip the managed
+update. Set `ELXTUBE_DISABLE_YTDLP_UPDATE=1` to disable automatic updates.
+
+Arch: `sudo pacman -S gtk4 mpv python`
 
 ## Build & Run
 

@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Build & run ytkw, log ke ~/lfitube/debug.log (overwrite tiap run)
+# Build & run elxTube, log ke debug.log (overwrite tiap run)
 
-set -e
+set -euo pipefail
 cd "$(dirname "$0")"
 
 echo "=== Building ==="
-cargo build --release 2>&1 | tail -3
+cargo build --release --locked
 
-echo "=== Running ytkw (log -> debug.log) ==="
-./target/release/ytkw 2>&1 | tee debug.log
+echo "=== Running elxTube (log -> debug.log) ==="
+./target/release/elxtube 2>&1 | tee debug.log

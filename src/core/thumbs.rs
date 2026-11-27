@@ -1,48 +1,106 @@
 use anyhow::{Context, Result};
-use std::io::Cursor;
+use std::io::{Cursor, Read};
 use std::path::Path;
 
 use image::codecs::jpeg::JpegEncoder;
 use image::imageops::FilterType;
 
-pub const THUMB_W: u32 = 320;
-pub const THUMB_H: u32 = 180;
 pub const THUMB_QUALITY: u8 = 70;
+pub const DEFAULT_THUMB_WIDTH: u32 = 480;
+pub const DEFAULT_THUMB_HEIGHT: u32 = 270;
 
-/// Download bytes from URL (blocking, ringan). 15s timeout.
+pub struct ThumbnailPixels {
+    pub jpeg: Vec<u8>,
+    pub rgba: Vec<u8>,
+    pub width: u32,
+    pub height: u32,
+}
+pub const MAX_DOWNLOAD_BYTES: usize = 2 * 1024 * 1024;
+
+/// Download bytes from URL (blocking, ringan). 5s timeout.
 pub fn fetch_bytes(url: &str) -> Result<Vec<u8>> {
     let resp = ureq::get(url)
         .set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
-        .timeout(std::time::Duration::from_secs(15))
+        .timeout(std::time::Duration::from_secs(5))
         .call()
         .with_context(|| format!("HTTP GET {}", url))?;
+    if let Some(length) = resp.header("content-length") {
+        if length
+            .parse::<u64>()
+            .is_ok_and(|length| length > MAX_DOWNLOAD_BYTES as u64)
+        {
+            anyhow::bail!("thumbnail response exceeds {} bytes", MAX_DOWNLOAD_BYTES);
+        }
+    }
     let mut buf = Vec::new();
-    resp.into_reader().read_to_end(&mut buf)?;
+    resp.into_reader()
+        .take((MAX_DOWNLOAD_BYTES + 1) as u64)
+        .read_to_end(&mut buf)?;
+    if buf.len() > MAX_DOWNLOAD_BYTES {
+        anyhow::bail!("thumbnail response exceeds {} bytes", MAX_DOWNLOAD_BYTES);
+    }
     Ok(buf)
 }
 
-/// Resize any image bytes → 160×90 JPEG (q70). Returns compressed JPEG bytes.
-pub fn resize_to_thumb_bytes(src_bytes: &[u8]) -> Result<Vec<u8>> {
+/// Resize any image bytes to the requested dimensions and JPEG quality.
+pub fn resize_to_dimensions(
+    src_bytes: &[u8],
+    width: u32,
+    height: u32,
+    quality: u8,
+) -> Result<Vec<u8>> {
     let img = image::load_from_memory(src_bytes).context("decode image")?;
-    let thumb = img.resize_to_fill(THUMB_W, THUMB_H, FilterType::Triangle);
+    let thumb = img.resize_to_fill(width, height, FilterType::Triangle);
     let mut out = Vec::with_capacity(8 * 1024);
     {
-        let mut enc = JpegEncoder::new_with_quality(Cursor::new(&mut out), THUMB_QUALITY);
+        let mut enc = JpegEncoder::new_with_quality(Cursor::new(&mut out), quality);
         enc.encode_image(&thumb).context("encode jpeg")?;
     }
     Ok(out)
 }
 
-/// Resize a file path → JPEG bytes.
-pub fn resize_file_to_thumb_bytes(path: &Path) -> Result<Vec<u8>> {
-    let bytes = std::fs::read(path)?;
-    resize_to_thumb_bytes(&bytes)
+/// Encode an image as JPEG without changing its source dimensions.
+pub fn preserve_resolution_to_jpeg_bytes(src_bytes: &[u8]) -> Result<Vec<u8>> {
+    let img = image::load_from_memory(src_bytes).context("decode image")?;
+    let mut out = Vec::with_capacity(16 * 1024);
+    {
+        let mut enc = JpegEncoder::new_with_quality(Cursor::new(&mut out), THUMB_QUALITY);
+        enc.encode_image(&img).context("encode jpeg")?;
+    }
+    Ok(out)
 }
 
-/// Convenience: fetch URL, resize, write to disk (cache path).
+pub fn decode_thumbnail(
+    src_bytes: &[u8],
+    dimensions: Option<(u32, u32)>,
+) -> Result<ThumbnailPixels> {
+    let image = image::load_from_memory(src_bytes).context("decode image")?;
+    let (width, height) = dimensions.unwrap_or((DEFAULT_THUMB_WIDTH, DEFAULT_THUMB_HEIGHT));
+    let thumbnail = image.resize_to_fill(width, height, FilterType::Triangle);
+    let rgba = thumbnail.to_rgba8();
+    let mut jpeg = Vec::with_capacity(16 * 1024);
+    {
+        let mut encoder = JpegEncoder::new_with_quality(Cursor::new(&mut jpeg), THUMB_QUALITY);
+        encoder.encode_image(&thumbnail).context("encode jpeg")?;
+    }
+    Ok(ThumbnailPixels {
+        jpeg,
+        rgba: rgba.into_raw(),
+        width,
+        height,
+    })
+}
+
+/// Convert a file to JPEG bytes while preserving its source dimensions.
+pub fn file_to_thumb_bytes(path: &Path) -> Result<Vec<u8>> {
+    let bytes = std::fs::read(path)?;
+    preserve_resolution_to_jpeg_bytes(&bytes)
+}
+
+/// Convenience: fetch a URL and write a resolution-preserving JPEG to disk.
 pub fn download_to_thumb_file(url: &str, dst: &Path) -> Result<u64> {
     let raw = fetch_bytes(url)?;
-    let jpg = resize_to_thumb_bytes(&raw)?;
+    let jpg = preserve_resolution_to_jpeg_bytes(&raw)?;
     std::fs::write(dst, &jpg)?;
     Ok(jpg.len() as u64)
 }

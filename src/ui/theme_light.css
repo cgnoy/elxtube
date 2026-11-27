@@ -1,0 +1,27 @@
+window { background: #ffffff; color: #0f0f0f; }
+label, button, entry, dropdown, listview, gridview { color: #0f0f0f; }
+.topbar, .sidebar, .chipbar { background: #ffffff; }
+.topbar { border-bottom-color: rgba(0, 0, 0, 0.08); }
+.search-shell { background: #f2f2f2; border-color: rgba(0, 0, 0, 0.1); }
+.search-entry { background: #ffffff; color: #0f0f0f; }
+.search-button { background: #f2f2f2; color: #0f0f0f; border-left-color: rgba(0, 0, 0, 0.1); }
+.search-button:hover { background: #e5e5e5; }
+.yt-icon-button { background: transparent; }
+.yt-icon-button:hover { background: #e5e5e5; }
+.sidebar-btn { background: transparent; }
+.sidebar-btn:hover, .sidebar-btn.active { background: #e5e5e5; }
+.sidebar-avatar, .avatar { background: #e5e5e5; color: #0f0f0f; }
+.chip { background: #f2f2f2; color: #0f0f0f; }
+.chip:hover { background: #e5e5e5; }
+.chip.active, .chip.active label { background: #0f0f0f; color: #ffffff; }
+.video-meta, .page-status, .player-subs, .result-description { color: #606060; }
+.thumbnail-frame, .thumbnail-wrapper, .thumbnail { background: #e5e5e5; }
+.btn-subscribe { background: #0f0f0f; color: #ffffff; }
+.btn-subscribed { background: #f2f2f2; color: #0f0f0f; }
+.player-controls button, .player-controls label, .player-controls dropdown button { color: #ffffff; background: transparent; }
+.duration-badge { color: #ffffff; }
+dropdown popover, popover > contents { background: #ffffff; color: #0f0f0f; }
+dropdown popover listview, dropdown popover listview row { background: #ffffff; color: #0f0f0f; }
+.channel-tab, .channel-tab:hover { color: #606060; }
+.channel-tab.active-tab { color: #0f0f0f; }
+.btn-action.active-filter, .btn-action.active-filter label { background: #0f0f0f; color: #ffffff; }

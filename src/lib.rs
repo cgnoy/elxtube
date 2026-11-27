@@ -1,3 +1,4 @@
+pub mod application;
 pub mod core;
 
 #[cfg(feature = "ui")]

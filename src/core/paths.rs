@@ -34,3 +34,7 @@ pub fn thumbs_dir() -> Result<PathBuf> {
     std::fs::create_dir_all(&d)?;
     Ok(d)
 }
+
+pub fn managed_ytdlp_path() -> Result<PathBuf> {
+    Ok(data_dir()?.join("bin").join("yt-dlp"))
+}

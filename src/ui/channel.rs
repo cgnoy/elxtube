@@ -1,125 +1,212 @@
+use gtk::gio;
+use gtk::prelude::*;
+use gtk::{
+    Box as GtkBox, Button, GridView, Label, Orientation, Picture, ScrolledWindow, Separator,
+};
 use std::collections::HashMap;
 use std::rc::Rc;
 use std::time::Instant;
 
-use gtk::gio;
-use gtk::prelude::*;
-use gtk::{
-    Box as GtkBox, Button, Label, Orientation, Picture, ScrolledWindow, Separator,
-};
-
 use super::home;
+use super::i18n;
+use super::playlist;
 
-pub fn build<F: Fn(String) + 'static>(
-    _t0: Instant,
-    on_activate: F,
+#[derive(Clone)]
+pub struct ChannelView {
+    pub widget: ScrolledWindow,
+    pub store: gio::ListStore,
+    pub grid: GridView,
+    pub title: Label,
+    pub avatar: Picture,
+    pub banner: Picture,
+    pub handle: Label,
+    pub description: Label,
+    pub subscribe: Button,
+    pub playlist_store: gio::ListStore,
+    pub playlist_tab: Button,
+    tab_buttons: Vec<(Button, &'static str)>,
+    filter_buttons: Vec<(Button, &'static str)>,
+}
+
+pub fn build(
+    t0: Instant,
+    on_activate: Rc<dyn Fn(String)>,
     on_channel_click: Rc<dyn Fn(String, String)>,
-) -> (ScrolledWindow, gio::ListStore, Label, Label, Picture, Label, Label) {
+    on_playlist_open: Rc<dyn Fn(String, String)>,
+) -> ChannelView {
     let scroll = ScrolledWindow::builder()
         .hscrollbar_policy(gtk::PolicyType::Never)
         .vexpand(true)
         .hexpand(true)
         .build();
-
     let container = GtkBox::new(Orientation::Vertical, 0);
 
-    // 1. BANNER
     let banner = Picture::new();
-    let banner_clone = banner.clone();
     banner.add_css_class("channel-banner");
-    banner.set_height_request(200);
+    banner.set_height_request(180);
     banner.set_content_fit(gtk::ContentFit::Cover);
     banner.set_paintable(Some(&home::fallback_texture()));
     container.append(&banner);
 
-    // 2. PROFIL
-    let header_box = GtkBox::new(Orientation::Horizontal, 24);
-    header_box.set_margin_top(24);
-    header_box.set_margin_start(64);
-    header_box.set_margin_end(64);
-    header_box.set_margin_bottom(16);
-
-    // Kita kembalikan label avatar & judul agar bisa diupdate dari window.rs
-    let avatar = Label::new(Some("C"));
+    let header = GtkBox::new(Orientation::Horizontal, 20);
+    header.set_margin_top(20);
+    header.set_margin_start(48);
+    header.set_margin_end(48);
+    header.set_margin_bottom(16);
+    let avatar = Picture::new();
     avatar.add_css_class("channel-avatar-large");
-    avatar.set_size_request(120, 120);
-    avatar.set_valign(gtk::Align::Start);
-    header_box.append(&avatar);
+    avatar.set_size_request(96, 96);
+    avatar.set_content_fit(gtk::ContentFit::Cover);
+    avatar.set_paintable(Some(&home::fallback_texture()));
+    header.append(&avatar);
 
-    let info_box = GtkBox::new(Orientation::Vertical, 4);
-    info_box.set_valign(gtk::Align::Center);
-
-    let title = Label::new(Some("Channel Name"));
+    let info = GtkBox::new(Orientation::Vertical, 4);
+    info.set_hexpand(true);
+    info.set_valign(gtk::Align::Center);
+    let title = Label::builder()
+        .label(i18n::tr("channel_name"))
+        .xalign(0.0)
+        .build();
     title.add_css_class("channel-title-large");
-    title.set_xalign(0.0);
-    info_box.append(&title);
-
-    let handle = Label::new(Some("@channel"));
-    let handle_clone = handle.clone();
+    info.append(&title);
+    let handle = Label::builder().label("@channel").xalign(0.0).build();
     handle.add_css_class("video-meta");
-    handle.set_xalign(0.0);
-    info_box.append(&handle);
+    info.append(&handle);
+    let description = Label::builder()
+        .xalign(0.0)
+        .wrap(true)
+        .lines(2)
+        .ellipsize(gtk::pango::EllipsizeMode::End)
+        .build();
+    description.add_css_class("video-meta");
+    description.set_margin_top(6);
+    info.append(&description);
+    let subscribe = Button::with_label("Subscribe");
+    subscribe.add_css_class("btn-subscribe");
+    subscribe.set_halign(gtk::Align::Start);
+    subscribe.set_margin_top(10);
+    info.append(&subscribe);
+    header.append(&info);
+    container.append(&header);
 
-    let desc = Label::new(Some(""));
-    let desc_clone = desc.clone();
-    desc.add_css_class("video-meta");
-    desc.set_xalign(0.0);
-    desc.set_margin_top(8);
-    info_box.append(&desc);
-
-    let btn_sub = Button::with_label("Subscribe");
-    btn_sub.add_css_class("btn-subscribe");
-    btn_sub.set_halign(gtk::Align::Start);
-    btn_sub.set_margin_top(12);
-    info_box.append(&btn_sub);
-
-    header_box.append(&info_box);
-    container.append(&header_box);
-
-    // 3. TABS
-    let tab_box = GtkBox::new(Orientation::Horizontal, 32);
-    tab_box.set_margin_start(64);
-    tab_box.set_margin_end(64);
-    tab_box.set_margin_bottom(8);
-
-    let tabs = ["Beranda", "Video", "Shorts", "Playlist", "Postingan"];
-    for (i, t) in tabs.iter().enumerate() {
-        let lbl = Label::new(Some(t));
-        lbl.add_css_class("channel-tab");
-        if i == 1 { lbl.add_css_class("active-tab"); }
-        tab_box.append(&lbl);
+    let tabs = GtkBox::new(Orientation::Horizontal, 28);
+    tabs.set_margin_start(48);
+    tabs.set_margin_bottom(8);
+    let home_tab = Button::with_label(i18n::tr("home"));
+    let video_tab = Button::with_label(i18n::tr("videos"));
+    let shorts_tab = Button::with_label(i18n::tr("shorts"));
+    let playlist_tab = Button::with_label(i18n::tr("playlist"));
+    let posts_tab = Button::with_label(i18n::tr("posts"));
+    for button in [
+        &home_tab,
+        &video_tab,
+        &shorts_tab,
+        &playlist_tab,
+        &posts_tab,
+    ] {
+        button.add_css_class("channel-tab");
+        tabs.append(button);
     }
-    container.append(&tab_box);
+    video_tab.add_css_class("active-tab");
+    container.append(&tabs);
     container.append(&Separator::new(Orientation::Horizontal));
 
-    // 4. FILTER
-    let filter_box = GtkBox::new(Orientation::Horizontal, 12);
-    filter_box.set_margin_top(16);
-    filter_box.set_margin_start(64);
-    filter_box.set_margin_end(64);
-
-    let filters = ["Terbaru", "Populer", "Terlama"];
-    for (i, f) in filters.iter().enumerate() {
-        let btn = Button::with_label(f);
-        btn.add_css_class("btn-action");
-        if i == 0 { btn.add_css_class("active-filter"); }
-        filter_box.append(&btn);
+    let filters = GtkBox::new(Orientation::Horizontal, 12);
+    filters.set_margin_top(14);
+    filters.set_margin_start(48);
+    filters.set_margin_bottom(8);
+    let mut filter_buttons = Vec::new();
+    for (index, (text, key)) in [
+        (i18n::tr("latest"), "latest"),
+        (i18n::tr("popular"), "popular"),
+        (i18n::tr("oldest"), "oldest"),
+    ]
+    .iter()
+    .enumerate()
+    {
+        let button = Button::with_label(text);
+        button.add_css_class("btn-action");
+        if index == 0 {
+            button.add_css_class("active-filter");
+        }
+        filters.append(&button);
+        filter_buttons.push((button.clone(), *key));
     }
-    container.append(&filter_box);
+    container.append(&filters);
 
-    // 5. GRID
-    let (grid_widget, store) = home::build(
-        _t0,
+    let (grid, store) = home::build(
+        t0,
         Vec::new(),
         HashMap::new(),
         on_activate,
         on_channel_click,
     );
-    grid_widget.set_margin_start(48);
-    grid_widget.set_margin_end(48);
-    grid_widget.set_margin_top(16);
-    container.append(&grid_widget);
+    grid.set_margin_start(40);
+    grid.set_margin_end(40);
+    grid.set_margin_top(8);
+    grid.set_margin_bottom(24);
+    container.append(&grid);
+
+    let (playlist_scroll, playlist_store) = playlist::build_list(on_playlist_open);
+    playlist_scroll.set_visible(false);
+    container.append(&playlist_scroll);
+
+    let tab_buttons = vec![
+        (home_tab.clone(), "home"),
+        (video_tab.clone(), "videos"),
+        (shorts_tab.clone(), "shorts"),
+        (playlist_tab.clone(), "playlist"),
+        (posts_tab.clone(), "posts"),
+    ];
+    let show_videos = {
+        let filters = filters.clone();
+        let grid = grid.clone();
+        let playlist_scroll = playlist_scroll.clone();
+        let playlist_tab = playlist_tab.clone();
+        let video_tab = video_tab.clone();
+        move |show_playlist: bool| {
+            filters.set_visible(!show_playlist);
+            grid.set_visible(!show_playlist);
+            playlist_scroll.set_visible(show_playlist);
+            if show_playlist {
+                video_tab.remove_css_class("active-tab");
+                playlist_tab.add_css_class("active-tab");
+            } else {
+                playlist_tab.remove_css_class("active-tab");
+                video_tab.add_css_class("active-tab");
+            }
+        }
+    };
+    let show_videos_tab = show_videos.clone();
+    video_tab.connect_clicked(move |_| show_videos_tab(false));
+    let show_playlists_tab = show_videos.clone();
+    playlist_tab.connect_clicked(move |_| show_playlists_tab(true));
 
     scroll.set_child(Some(&container));
-    (scroll, store, title, avatar, banner_clone, handle_clone, desc_clone)
+    ChannelView {
+        widget: scroll,
+        store,
+        grid,
+        title,
+        avatar,
+        banner,
+        handle,
+        description,
+        subscribe,
+        playlist_store,
+        playlist_tab,
+        tab_buttons,
+        filter_buttons,
+    }
+}
+
+impl ChannelView {
+    pub fn apply_language(&self) {
+        for (button, key) in &self.tab_buttons {
+            button.set_label(i18n::tr(key));
+        }
+        for (button, key) in &self.filter_buttons {
+            button.set_label(i18n::tr(key));
+        }
+    }
 }

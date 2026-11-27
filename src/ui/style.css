@@ -1,243 +1,217 @@
-/* 1. GLOBAL SETTING */
 window {
-    background-color: #f9f9f9;
-    color: #0f0f0f;
     font-family: "Cantarell", "Sans", sans-serif;
+    font-size: 14px;
 }
 
-/* Paksa semua Label, Tombol, dan Entry jadi hitam pekat */
-label, button, entry, dropdown, listview {
-    color: #0f0f0f;
-}
-
-/* 2. TOP BAR */
 .topbar {
-    background-color: #ffffff;
-    padding: 8px 16px;
-    border-bottom: 1px solid #e5e5e5;
+    min-height: 64px;
+    padding: 0 12px;
+    background: #0f0f0f;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
-.search-entry {
-    background-color: #f8f8f8;
-    border: 1px solid #ccc;
-    border-radius: 20px;
-    padding: 8px 16px;
-    color: #0f0f0f;
-}
+.topbar-start { min-width: 240px; }
+.topbar-center { flex: 1; justify-content: center; padding: 0 20px; }
+.topbar-end { min-width: 240px; justify-content: flex-end; }
 
-/* 3. SIDEBAR */
-.sidebar {
-    background-color: #f9f9f9;
-    padding: 12px;
-    border-right: 1px solid #e5e5e5;
-}
-.sidebar-btn {
-    padding: 10px 12px;
-    border-radius: 8px;
-    background: transparent;
-    border: none;
-    font-weight: 500;
-    color: #0f0f0f;
-}
-.sidebar-btn:hover {
-    background-color: #e5e5e5;
-}
-
-/* 4. VIDEO CARD (HOME) */
-.video-card {
-    padding: 8px;
-    border-radius: 12px;
-    background-color: #ffffff;
-}
-.video-card:hover {
-    background-color: #f2f2f2;
-}
-.video-title {
-    font-weight: 600;
-    font-size: 14px;
-    color: #0f0f0f;
-}
-.video-meta {
-    font-size: 12px;
-    color: #606060;
-}
-
-/* 5. PLAYER INFO (JUDUL & CHANNEL) */
-.player-title {
+.brand {
     font-size: 20px;
-    font-weight: bold;
-    color: #0f0f0f;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin: 0 10px;
 }
-.player-channel {
-    font-size: 14px;
-    font-weight: bold;
-    color: #0f0f0f;
-}
-.player-subs {
-    font-size: 12px;
-    color: #606060;
-}
-
-/* 6. TOMBOL SUBSCRIBE & ACTION */
-.btn-subscribe {
-    background-color: #0f0f0f;
-    color: #ffffff;
-    border-radius: 20px;
-    padding: 8px 16px;
-    font-weight: bold;
+.yt-icon-button {
+    min-width: 40px;
+    min-height: 40px;
+    padding: 0;
     border: none;
-}
-.btn-subscribe:hover {
-    background-color: #272727;
-}
-.btn-subscribed {
-    background-color: #f2f2f2;
-    color: #0f0f0f;
-}
-.btn-subscribed:hover {
-    background-color: #e5e5e5;
-}
-.btn-action {
-    background-color: #f2f2f2;
-    color: #0f0f0f;
-    border-radius: 20px;
-    padding: 8px 16px;
-    font-weight: bold;
-    border: none;
-}
-.btn-action:hover {
-    background-color: #e5e5e5;
-}
-
-/* 7. DROPDOWN RESOLUSI (Sering bikin bug abu-abu tipis) */
-dropdown button {
-    background-color: #f2f2f2;
-    color: #0f0f0f;
-    border-radius: 8px;
-    padding: 4px 12px;
-    font-weight: bold;
-    border: 1px solid #d9d9d9;
+    border-radius: 50%;
+    background: transparent;
     box-shadow: none;
 }
-dropdown button:hover {
-    background-color: #e5e5e5;
+.yt-icon-button:hover { background: rgba(255, 255, 255, 0.1); }
+.yt-icon-button:disabled { background: transparent; opacity: 0.38; }
+.account-button {
+    min-width: 32px;
+    min-height: 32px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: #7c3aed;
+    color: #ffffff;
+    font-weight: 800;
+    box-shadow: none;
 }
-dropdown popover {
-    background-color: #ffffff;
-    border: 1px solid #e5e5e5;
-    border-radius: 8px;
-}
-dropdown popover listview {
-    background-color: #ffffff;
-    color: #0f0f0f;
-}
-dropdown popover listview row {
-    padding: 8px;
-    color: #0f0f0f;
-}
-dropdown popover listview row:selected {
-    background-color: #e5e5e5;
-    color: #0f0f0f;
-}
+.account-button:hover { background: #6d28d9; }
 
-/* 8. PLAYER CONTROLS (DI ATAS VIDEO HITAM) */
-/* Khusus ini kita paksa putih karena latarnya video */
-.player-controls {
-    background-color: rgba(0, 0, 0, 0.7);
-    padding: 12px 16px;
-    border-radius: 0 0 12px 12px;
+.search-shell {
+    width: 100%;
+    max-width: 640px;
+    min-width: 240px;
+    height: 40px;
+    border-radius: 24px;
+    overflow: hidden;
+    background: #222222;
+    border: 1px solid rgba(255, 255, 255, 0.12);
 }
+.search-entry {
+    min-height: 38px;
+    padding: 0 18px;
+    border: none;
+    border-radius: 24px 0 0 24px;
+    background: #121212;
+    box-shadow: none;
+    outline: none;
+}
+.search-entry:focus { box-shadow: inset 0 0 0 1px #3ea6ff; }
+.search-button {
+    min-width: 64px;
+    min-height: 40px;
+    padding: 0;
+    border: none;
+    border-left: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 0 24px 24px 0;
+    background: #222222;
+    box-shadow: none;
+}
+.search-button:hover { background: #303030; }
+
+.sidebar {
+    padding: 12px 0;
+    background: #0f0f0f;
+}
+.sidebar-btn {
+    min-height: 40px;
+    padding: 8px 24px;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    font-weight: 500;
+}
+.sidebar-btn:hover { background: rgba(255, 255, 255, 0.1); }
+.sidebar-btn.active {
+    background: rgba(255, 255, 255, 0.1);
+    font-weight: 700;
+}
+.sidebar-btn-content { min-width: 0; }
+.sidebar-label { min-width: 0; }
+.sidebar-rail .sidebar-btn { padding-left: 24px; padding-right: 24px; }
+.sidebar-rail .sidebar-btn-content { gap: 0; }
+.sidebar-section {
+    padding: 16px 24px 6px;
+    font-size: 16px;
+    font-weight: 700;
+}
+.sidebar-avatar, .avatar {
+    border-radius: 50%;
+    font-weight: 700;
+}
+.sidebar-avatar { min-width: 24px; min-height: 24px; }
+
+.page { margin: 0; }
+.page-header { padding: 16px 24px 4px; }
+.page-title { font-size: 20px; font-weight: 700; }
+.page-status { padding: 24px; font-size: 14px; }
+.filter-row { padding: 12px 24px 8px; }
+.chipbar {
+    min-height: 56px;
+    padding: 8px 24px;
+    background: #0f0f0f;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.chip {
+    min-height: 32px;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 8px;
+    background: #272727;
+    font-weight: 600;
+    box-shadow: none;
+}
+.chip:hover { background: #3f3f3f; }
+.chip.active { background: #f1f1f1; color: #0f0f0f; }
+
+.video-grid { padding: 12px 16px 24px; }
+.video-card {
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+}
+.video-card:hover { background: transparent; }
+.thumbnail-frame, .thumbnail-wrapper, .thumbnail { border-radius: 12px; }
+.thumbnail { background: #272727; }
+.duration-badge {
+    background: rgba(0, 0, 0, 0.82);
+    color: #ffffff;
+    border-radius: 4px;
+    padding: 1px 4px;
+    margin: 6px;
+    font-size: 12px;
+    font-weight: 600;
+}
+.video-title { font-weight: 600; font-size: 15px; }
+.video-meta { font-size: 13px; }
+.video-card-overlay-meta {
+    padding: 6px 8px;
+    border-radius: 0 0 12px 12px;
+    background: rgba(0, 0, 0, 0.78);
+    color: #ffffff;
+}
+.video-card-overlay-meta .video-title { color: #ffffff; font-size: 13px; }
+.video-card-overlay-meta .video-meta { color: #dddddd; font-size: 11px; }
+.video-card-overlay-meta .avatar { background: #444444; color: #ffffff; }
+.avatar { min-width: 36px; min-height: 36px; font-size: 14px; }
+.thumb-progress { min-height: 3px; margin: 0 6px 6px; }
+.thumb-progress trough { min-height: 3px; }
+.thumb-progress progress { min-height: 3px; background: #ff0033; }
+
+.result-row { padding: 8px; border-radius: 12px; }
+.result-row:hover { background: rgba(255, 255, 255, 0.06); }
+.result-thumbnail { min-width: 320px; min-height: 180px; }
+.compact-results .result-thumbnail { min-width: 240px; min-height: 135px; }
+.result-description { font-size: 13px; }
+
+.player-title { font-size: 20px; font-weight: 700; }
+.player-channel { font-size: 14px; font-weight: 700; }
+.player-subs { font-size: 12px; }
+.btn-subscribe { border-radius: 20px; padding: 8px 16px; font-weight: 700; }
+.btn-action { border-radius: 20px; padding: 8px 16px; font-weight: 600; }
+.player-controls { background: rgba(0, 0, 0, 0.78); padding: 10px 14px; }
 .player-controls button, .player-controls label, .player-controls dropdown button {
     color: #ffffff;
     background: transparent;
     border: none;
+    box-shadow: none;
 }
-.player-controls button:hover {
-    background: rgba(255,255,255,0.2);
-    border-radius: 50%;
-}
-.player-time {
-    font-size: 13px;
-    font-family: monospace;
-    color: #ffffff;
-}
+.player-controls button:hover { background: rgba(255,255,255,0.18); border-radius: 50%; }
+.player-time { font-size: 13px; font-family: monospace; color: #ffffff; }
+scale.seek-bar trough { background: rgba(255,255,255,0.3); min-height: 4px; }
+scale.seek-bar highlight { background: #ff0033; min-height: 4px; }
+scale.seek-bar slider { background: #ff0033; min-width: 12px; min-height: 12px; margin: -4px; }
+scale.vol-slider trough { min-height: 4px; }
+scale.vol-slider highlight, scale.vol-slider slider { background: currentColor; }
 
-/* 9. SEEK BAR & VOLUME SLIDER */
-scale.seek-bar trough { background-color: rgba(255,255,255,0.3); min-height: 4px; border-radius: 2px; }
-scale.seek-bar highlight { background-color: #ff0000; border-radius: 2px; }
-scale.seek-bar slider { background-color: #ff0000; min-width: 12px; min-height: 12px; border-radius: 50%; margin: -4px; }
-scale.vol-slider trough { background-color: #e5e5e5; min-height: 4px; border-radius: 2px; }
-scale.vol-slider highlight { background-color: #0f0f0f; border-radius: 2px; }
-scale.vol-slider slider { background-color: #0f0f0f; min-width: 12px; min-height: 12px; border-radius: 50%; margin: -4px; }
+.up-next { padding: 0 12px 0 4px; }
+.up-next-title { font-size: 17px; font-weight: 700; padding: 4px 4px 10px; }
+.up-next-thumb { min-width: 160px; min-height: 90px; }
+.up-next-item { padding: 4px; border-radius: 8px; }
+.up-next-item:hover { background: rgba(255, 255, 255, 0.07); }
 
-/* 10. VOLUME POPOVER */
-popover > contents {
-    background-color: #ffffff;
-    border: 1px solid #e5e5e5;
-    border-radius: 8px;
-}
-.vol-pct {
-    color: #0f0f0f;
-    font-weight: bold;
-}
+dropdown button { border-radius: 8px; padding: 4px 12px; box-shadow: none; }
+popover > contents { border-radius: 8px; }
 
-/* Fix untuk tombol refresh di subscription */
-.refresh-btn {
-    background-color: #0f0f0f;
-    color: #ffffff;
-    border-radius: 8px;
-    padding: 8px 16px;
-    font-weight: bold;
-}
+.channel-banner { border-radius: 10px; margin: 16px 48px 0; }
+.channel-avatar-large { border-radius: 50%; font-size: 42px; font-weight: 700; }
+.channel-title-large { font-size: 28px; font-weight: 700; }
+.channel-tab { font-size: 14px; font-weight: 600; padding: 8px 0; }
+.channel-tab.active-tab { border-bottom: 2px solid currentColor; }
+.btn-action.active-filter { font-weight: 700; }
 
-/* Search List View */
-listview row {
-    padding: 8px;
-    border-radius: 12px;
-}
-listview row:hover {
-    background-color: #f2f2f2;
-}
-
-/* ==========================================
-   CHANNEL PAGE STYLES
-   ========================================== */
-.channel-banner {
-    background-color: #e5e5e5;
-    border-radius: 12px;
-    margin: 16px 64px 0 64px;
-}
-
-.channel-avatar-large {
-    background-color: #3ea6ff;
-    color: white;
-    font-size: 48px;
-    font-weight: bold;
-    border-radius: 50%;
-}
-
-.channel-title-large {
-    font-size: 32px;
-    font-weight: bold;
-    color: #0f0f0f;
-}
-
-.channel-tab {
-    font-size: 15px;
-    font-weight: 500;
-    color: #606060;
-    padding-bottom: 8px;
-}
-.channel-tab:hover {
-    color: #0f0f0f;
-    border-bottom: 2px solid #0f0f0f;
-}
-.channel-tab.active-tab {
-    color: #0f0f0f;
-    font-weight: bold;
-    border-bottom: 2px solid #0f0f0f;
-}
-
-.btn-action.active-filter {
-    background-color: #0f0f0f;
-    color: #ffffff;
-}
+.compact-layout .topbar-start { min-width: 160px; }
+.compact-layout .topbar-end { min-width: 96px; }
+.compact-layout .topbar-center { padding: 0 8px; }
+.compact-layout .search-shell { min-width: 160px; }
+.compact-layout .page-header,
+.compact-layout .filter-row { padding-left: 12px; padding-right: 12px; }
+.compact-layout .chipbar { padding-left: 12px; padding-right: 12px; }
+.compact-layout .channel-banner { margin-left: 12px; margin-right: 12px; }

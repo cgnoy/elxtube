@@ -1,0 +1,30 @@
+window { background: #0f0f0f; color: #f1f1f1; }
+label, button, entry, dropdown, listview, gridview { color: #f1f1f1; }
+button { background: #272727; }
+gridview, listview { background: #0f0f0f; }
+gridview > child, listview > child { background: transparent; }
+.topbar, .sidebar, .chipbar { background: #0f0f0f; }
+.topbar { border-bottom-color: rgba(255, 255, 255, 0.08); }
+.search-shell { background: #222222; border-color: rgba(255, 255, 255, 0.12); }
+.search-entry { background: #121212; color: #f1f1f1; }
+.search-button { background: #222222; color: #f1f1f1; border-left-color: rgba(255, 255, 255, 0.12); }
+.search-button:hover { background: #303030; }
+.yt-icon-button { background: transparent; }
+.yt-icon-button:hover { background: #272727; }
+.sidebar-btn { background: transparent; }
+.sidebar-btn:hover, .sidebar-btn.active { background: #272727; }
+.sidebar-avatar, .avatar { background: #3f3f3f; color: #ffffff; }
+.chip { background: #272727; color: #f1f1f1; }
+.chip:hover { background: #3f3f3f; }
+.chip.active, .chip.active label { background: #f1f1f1; color: #0f0f0f; }
+.video-meta, .page-status, .player-subs, .result-description { color: #aaaaaa; }
+.thumbnail-frame, .thumbnail-wrapper, .thumbnail { background: #272727; }
+.btn-subscribe { background: #f1f1f1; color: #0f0f0f; }
+.btn-subscribed { background: #272727; color: #f1f1f1; }
+.player-controls button, .player-controls label, .player-controls dropdown button { color: #ffffff; background: transparent; }
+.duration-badge { color: #ffffff; }
+dropdown popover, popover > contents { background: #212121; color: #f1f1f1; }
+dropdown popover listview, dropdown popover listview row { background: #212121; color: #f1f1f1; }
+.channel-tab, .channel-tab:hover { color: #aaaaaa; }
+.channel-tab.active-tab { color: #f1f1f1; }
+.btn-action.active-filter, .btn-action.active-filter label { background: #f1f1f1; color: #0f0f0f; }
