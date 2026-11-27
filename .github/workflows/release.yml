@@ -62,7 +62,7 @@ jobs:
         run: |
           podman run --rm -e ELXTUBE_SKIP_BUILD=1 -v "$PWD:/workspace:Z" \
             docker.io/library/archlinux:latest \
-            bash -lc "pacman -Syu --noconfirm fakeroot >/dev/null && chmod -R a+rwX /workspace && su nobody -s /bin/bash -c 'cd /workspace && bash packaging/build-arch.sh'"
+            bash -lc "pacman -Syu --noconfirm fakeroot gtk4 mpv python >/dev/null && chmod -R a+rwX /workspace && setpriv --reuid=nobody --regid=nobody --clear-groups bash -c 'cd /workspace && bash packaging/build-arch.sh'"
       - name: Build AppImage
         run: bash packaging/build-appimage.sh
       - name: Generate checksums
