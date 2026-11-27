@@ -19,7 +19,7 @@ jobs:
       - name: Install packaging tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y clang rpm podman pkg-config libgtk-4-dev libmpv-dev
+          sudo apt-get install -y clang mold rpm podman pkg-config libgtk-4-dev libmpv-dev
       - name: Build release bundle
         env:
           CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER: cc
