@@ -18,7 +18,7 @@ jobs:
       - name: Install packaging tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y rpm podman pkg-config libgtk-4-dev libmpv-dev
+          sudo apt-get install -y clang rpm podman pkg-config libgtk-4-dev libmpv-dev
       - name: Build release bundle
         run: bash packaging/build-bundle.sh
       - name: Build Debian package
